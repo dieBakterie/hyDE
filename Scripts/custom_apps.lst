@@ -1,21 +1,21 @@
 # --------------------------------------------------- // System
-# downgrade                                            # downgrade packages
+downgrade                                              # downgrade packages
 # trash-cli-git                                        # cli to manage trash files
 # libinput-gestures                                    # actions touchpad gestures using libinput
 # gestures                                             # gui for libinput-gestures
 
 # --------------------------------------------------- // Dependencies
-xdg-desktop-portal-gtk                                 # xdg desktop portal using gtk
-# emote                                                # emoji picker gtk3
+# xdg-desktop-portal-gtk                               # xdg desktop portal using gtk
+emote                                                  # emoji picker gtk3
 
 # --------------------------------------------------- // Gaming
 steam                                                  # gaming platform
 gamemode                                               # daemon and library for game optimisations
 mangohud                                               # system performance overlay
-# gamescope                                            # micro-compositor for gaming
+gamescope                                              # micro-compositor for gaming
 
 # --------------------------------------------------- // Music
-cava                                                   # audio visualizer
+# cava                                                 # audio visualizer
 spotify                                                # proprietary music streaming service
 spicetify-cli                                          # cli to customize spotify client
 

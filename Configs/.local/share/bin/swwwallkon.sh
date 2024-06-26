@@ -1,8 +1,8 @@
-#!/usr/bin/env sh
-
+#!/usr/bin/env bash
+# shellcheck disable=SC1091
+# shellcheck disable=SC2154
 
 #// Set variables
-
 scrDir=$(dirname "$(realpath "$0")")
 source "${scrDir}/globalcontrol.sh"
 scrName="$(basename "$0")"
@@ -11,50 +11,32 @@ kmenuDesk="${kmenuPath}/hydewallpaper.desktop"
 tgtPath="$(dirname "${hydeThemeDir}")"
 get_themes
 
-
 #// Evaluate options
-
-while getopts "t:w:" option ; do
-    case $option in
-
-        t ) # Set theme
-            for x in "${!thmList[@]}" ; do
-                if [ "${thmList[x]}" == "$OPTARG" ] ; then
-                    setTheme="${thmList[x]}"
-                    break
-                fi
-            done
-            [ -z "${setTheme}" ] && echo "Error: '$OPTARG' theme not available..." && exit 1
-            ;;
-
-        w ) # Set wallpaper
-            if [ -f "$OPTARG" ] && file --mime-type "$OPTARG" | grep -q 'image/' ; then
-                setWall="$OPTARG"
-            else
-                echo "Error: '$OPTARG' is not an image file..."
-                exit 1
-            fi
-            ;;
-
-        * ) # Refresh menu
-            unset setTheme
-            unset setWall
-            ;;
-
+while getopts "t:w:" opt; do
+    case $opt in
+    t) theme="$OPTARG" ;;
+    w) wallpaper="$OPTARG" ;;
+    *) unset theme unset wallpaper ;;
     esac
 done
 
+if [[ -n $theme ]]; then
+    setTheme=$(select_theme "$theme")
+elif [[ -n $wallpaper ]]; then
+    setWall=$(validate_wallpaper "$wallpaper")
+fi
 
 #// Regenerate desktop
-
-if [ ! -z "${setTheme}" ] && [ ! -z "${setWall}" ] ; then
+if [ -n "${setTheme}" ] && [ -n "${setWall}" ]; then
 
     inwallHash="$(set_hash "${setWall}")"
     get_hashmap "${tgtPath}/${setTheme}"
-    if [[ "${wallHash[@]}" == *"${inwallHash}"* ]] ; then
-        notify-send -a "t2" -i "${thmbDir}/${inwallHash}.sqre" "Error" "Hash matched in ${setTheme}"
-        exit 0
-    fi
+    for hash in "${wallHash[@]}"; do
+        if [[ "$hash" == *"${inwallHash}"* ]]; then
+            notify-send -a "t2" -i "${thmbDir}/${inwallHash}.sqre" "Error" "Hash matched in ${setTheme}"
+            exit 0
+        fi
+    done
 
     cp "${setWall}" "${tgtPath}/${setTheme}/wallpapers"
     ln -fs "${tgtPath}/${setTheme}/wallpapers/$(basename "${setWall}")" "${tgtPath}/${setTheme}/wall.set"
@@ -64,10 +46,9 @@ if [ ! -z "${setTheme}" ] && [ ! -z "${setWall}" ] ; then
 
 else
 
-    echo -e "[Desktop Entry]\nType=Service\nMimeType=image/png;image/jpeg;image/jpg;image/gif\nActions=Menu-Refresh$(printf ";%s" "${thmList[@]}")\nX-KDE-Submenu=Set As Wallpaper...\n\n[Desktop Action Menu-Refresh]\nName=.: Refresh List :.\nExec=${scrName}" > "${kmenuDesk}"
-    for i in "${!thmList[@]}" ; do
-        echo -e "\n[Desktop Action ${thmList[i]}]\nName=${thmList[i]}\nExec=${scrName} -t \"${thmList[i]}\" -w %u" >> "${kmenuDesk}"
+    echo -e "[Desktop Entry]\nType=Service\nMimeType=image/png;image/jpeg;image/jpg;image/gif\nActions=Menu-Refresh$(printf ";%s" "${thmList[@]}")\nX-KDE-Submenu=Set As Wallpaper...\n\n[Desktop Action Menu-Refresh]\nName=.: Refresh List :.\nExec=${scrName}" >"${kmenuDesk}"
+    for i in "${!thmList[@]}"; do
+        echo -e "\n[Desktop Action ${thmList[i]}]\nName=${thmList[i]}\nExec=${scrName} -t \"${thmList[i]}\" -w %u" >>"${kmenuDesk}"
     done
 
 fi
-

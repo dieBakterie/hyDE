@@ -4,7 +4,7 @@
 #|-/ /--| Prasanth Rangan               |-/ /--|#
 #|/ /---+-------------------------------+/ /---|#
 
-cat << "EOF"
+cat <<"EOF"
 
 -------------------------------------------------
         .
@@ -12,8 +12,7 @@ cat << "EOF"
       /^  \      _____    | || |_  _|   \| __|
      /  _  \    |_____|   | __ | || | |) | _| 
     /  | | ~\             |_||_|\_, |___/|___|
-   /.-'   '-.\                  |__/          
-
+   /.-'   '-.\                  |__/
 -------------------------------------------------
 
 
@@ -22,10 +21,10 @@ cat << "EOF"
 please type "DONT HYDE" to continue...
 EOF
 
-read promptIn
+read -r promptIn
 [ "${promptIn}" == "DONT HYDE" ] || exit 0
 
-cat << "EOF"
+cat <<"EOF"
 
          _         _       _ _ 
  _ _ ___|_|___ ___| |_ ___| | |
@@ -36,14 +35,16 @@ cat << "EOF"
 EOF
 
 scrDir=$(dirname "$(realpath "$0")")
+# shellcheck disable=SC1091
 source "${scrDir}/global_fn.sh"
+# shellcheck disable=SC2181
 if [ $? -ne 0 ]; then
     echo "Error: unable to source global_fn.sh..."
     exit 1
 fi
 
 CfgLst="${scrDir}/restore_cfg.lst"
-if [ ! -f "${CfgLst}" ] ; then
+if [ ! -f "${CfgLst}" ]; then
     echo "ERROR: '${CfgLst}' does not exist..."
     exit 1
 fi
@@ -51,15 +52,13 @@ fi
 BkpDir="${HOME}/.config/cfg_backups/$(date +'%y%m%d_%Hh%Mm%Ss')_remove"
 mkdir -p "${BkpDir}"
 
-cat "${CfgLst}" | while read lst ; do
-    pth=$(echo "${lst}" | awk -F '|' '{print $3}')
+cat <"${CfgLst}" | while IFS='|' read -r _ pth cfg _; do
     pth=$(eval echo "${pth}")
-    cfg=$(echo "${lst}" | awk -F '|' '{print $4}')
 
     echo "${cfg}" | xargs -n 1 | while read -r cfg_chk; do
         [[ -z "${pth}" ]] && continue
-        if [ -d "${pth}/${cfg_chk}" ] || [ -f "${pth}/${cfg_chk}" ] ; then
-            tgt=$(echo "${pth}" | sed "s+^${HOME}++g")
+        if [ -d "${pth}/${cfg_chk}" ] || [ -f "${pth}/${cfg_chk}" ]; then
+            tgt=${pth#"${HOME}"}
             if [ ! -d "${BkpDir}${tgt}" ]; then
                 mkdir -p "${BkpDir}${tgt}"
             fi

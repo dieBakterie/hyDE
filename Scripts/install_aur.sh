@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2154
+# shellcheck disable=SC1091
 #|---/ /+-------------------------------------------+---/ /|#
 #|--/ /-| Script to install aur helper, yay or paru |--/ /-|#
 #|-/ /--| Prasanth Rangan                           |-/ /--|#
@@ -6,6 +8,7 @@
 
 scrDir=$(dirname "$(realpath "$0")")
 source "${scrDir}/global_fn.sh"
+# shellcheck disable=SC2181
 if [ $? -ne 0 ]; then
     echo "Error: unable to source global_fn.sh..."
     exit 1
@@ -19,12 +22,12 @@ fi
 aurhlpr="${1:-yay}"
 
 if [ -d "$HOME/Clone" ]; then
-    echo "~/Clone directory exists..."
+    echo "$HOME/Clone directory exists..."
     rm -rf "$HOME/Clone/${aurhlpr}"
 else
     mkdir "$HOME/Clone"
-    echo -e "[Desktop Entry]\nIcon=default-folder-git" > "$HOME/Clone/.directory"
-    echo "~/Clone directory created..."
+    echo -e "[Desktop Entry]\nIcon=default-folder-git" >"$HOME/Clone/.directory"
+    echo "$HOME/Clone directory created..."
 fi
 
 if pkg_installed git; then
@@ -35,7 +38,7 @@ else
 fi
 
 cd "$HOME/Clone/${aurhlpr}"
-makepkg ${use_default} -si
+makepkg "${use_default}" -si
 
 if [ $? -eq 0 ]; then
     echo "${aurhlpr} aur helper installed..."

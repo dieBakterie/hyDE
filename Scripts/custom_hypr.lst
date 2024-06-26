@@ -23,15 +23,16 @@ qt5-quickcontrols2                                     # for sddm theme ui eleme
 qt5-graphicaleffects                                   # for sddm theme effects
 
 # --------------------------------------------------- // Window Manager
-hyprland                                               # wlroots-based wayland compositor
+hyprland-git                                           # wlroots-based wayland compositor
 dunst                                                  # notification daemon
 rofi-lbonn-wayland-git                                 # application launcher
 waybar                                                 # system bar
 swww                                                   # wallpaper
-swaylock-effects-git                                   # lock screen
+swaylock-effects-git|swaylock                          # lock screen
+hyprlock-git|hyprlock                                  # lock screen
 wlogout                                                # logout menu
 grimblast-git                                          # screenshot tool
-hyprpicker                                             # color picker
+hyprpicker-git                                         # color picker
 slurp                                                  # region select for screenshot/screenshare
 swappy                                                 # screenshot editor
 cliphist                                               # clipboard manager

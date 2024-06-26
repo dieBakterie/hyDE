@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC1091
 #|---/ /+--------------------------------+---/ /|#
 #|--/ /-| Script to restore hyde configs |--/ /-|#
 #|-/ /--| Prasanth Rangan                |-/ /--|#
@@ -29,8 +30,7 @@ else
     mkdir -p "${BkpDir}"
 fi
 
-cat "${CfgLst}" | while read lst; do
-
+cat <"${CfgLst}" | while read -r lst; do
     ovrWrte=$(echo "${lst}" | awk -F '|' '{print $1}')
     bkpFlag=$(echo "${lst}" | awk -F '|' '{print $2}')
     pth=$(echo "${lst}" | awk -F '|' '{print $3}')
@@ -47,9 +47,9 @@ cat "${CfgLst}" | while read lst; do
 
     echo "${cfg}" | xargs -n 1 | while read -r cfg_chk; do
         if [[ -z "${pth}" ]]; then continue; fi
-        tgt=$(echo "${pth}" | sed "s+^${HOME}++g")
+        tgt=${pth#"${HOME}"}
 
-        if ( [ -d "${pth}/${cfg_chk}" ] || [ -f "${pth}/${cfg_chk}" ] ) && [ "${bkpFlag}" == "Y" ]; then
+        if { [ -d "${pth}/${cfg_chk}" ] || [ -f "${pth}/${cfg_chk}" ]; } && [ "${bkpFlag}" == "Y" ]; then
 
             if [ ! -d "${BkpDir}${tgt}" ]; then
                 mkdir -p "${BkpDir}${tgt}"
@@ -73,11 +73,10 @@ cat "${CfgLst}" | while read lst; do
             echo -e "\033[0;33m[preserve]\033[0m Skipping ${pth}/${cfg_chk} to preserve user setting..."
         fi
     done
-
 done
 
 if [ -z "${ThemeOverride}" ]; then
-    if nvidia_detect && [ $(grep '^source = ~/.config/hypr/nvidia.conf' "${HOME}/.config/hypr/hyprland.conf" | wc -l) -eq 0 ]; then
-        echo -e 'source = ~/.config/hypr/nvidia.conf # auto sourced vars for nvidia\n' >> "${HOME}/.config/hypr/hyprland.conf"
+    if nvidia_detect && [ "$(grep -c '^# █▄ █ █ █ █ █▀▄ █ ▄▀█' "${HOME}/.config/hypr/hyprland.conf")" -eq 0 ]; then
+        cat "${CfgDir}/.config/hypr/nvidia.conf" >>"${HOME}/.config/hypr/configs/environments.conf"
     fi
 fi

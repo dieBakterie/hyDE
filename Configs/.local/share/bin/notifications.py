@@ -1,5 +1,4 @@
-#!/usr/bin/python3
-
+#!/usr/bin/env python3
 import subprocess
 import json
 import time
@@ -15,14 +14,15 @@ def format_history(history):
     alt = 'none'
     tooltip_click = []
     tooltip_click.append("󰎟 Notifications")
-    tooltip_click.append("󰳽 <small>click-left:  history pop</small>")
-    tooltip_click.append("󰳽 <small>click-middle: 󰛌 clear history</small>")
-    tooltip_click.append("󰳽 <small>click-right: 󱄊 close all</small>")
+    tooltip_click.append("󰳽 click-left:  history pop")
+    tooltip_click.append("󰳽 click-middle: 󰛌 clear history")
+    tooltip_click.append("󰳽 click-right: 󱄊 close all")
 
     tooltip = []
 
     if count > 0:
-        for notification in history['data'][0]:
+        notification_count = min(count, 20)  # Displays up to 20 Notifications
+        for notification in history['data'][0][:notification_count]:
             body = notification.get('body', {}).get('data', '')
             category = notification.get('category', {}).get('data', '')
             if category:
@@ -43,12 +43,12 @@ def format_history(history):
     return formatted_history
 
 def main():
-    # while True:
+    while True:
         history = get_dunst_history()
         formatted_history = format_history(history)
         sys.stdout.write(json.dumps(formatted_history) + '\n')
         sys.stdout.flush()
-        # time.sleep(1)
+        time.sleep(1)
 
 if __name__ == "__main__":
     main()
