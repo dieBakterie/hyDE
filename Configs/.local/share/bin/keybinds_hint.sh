@@ -90,7 +90,7 @@ while [ "$#" -gt 0 ]; do
     shift
     kb_hint_line="$1"
     ;;
-  --help) # Add Help message
+  -*) # Add Help message
     HELP
     exit
     ;;
@@ -171,15 +171,15 @@ $comments
 
 };
 
-def keycode_mapping: { #? Fetches keycode from a file 
+def keycode_mapping: { #? Fetches keycode from a file
  "0": "",
  $([ -f "${keycodeFile}" ] && cat "${keycodeFile}")
 };
 
   def modmask_mapping: { #? Define mapping for modmask numbers represents bitmask
     "64": " ",  #? SUPER  󰻀 Also added 2 En space ' ' <<<
-    "8": "ALT", 
-    "4": "CTRL", 
+    "8": "ALT",
+    "4": "CTRL",
     "1": "SHIFT",
     "0": " ",
  $([ -f "${modmaskFile}" ] && cat "${modmaskFile}")
@@ -190,10 +190,10 @@ def keycode_mapping: { #? Fetches keycode from a file
     "mouse_down" : "󱕐",
     "mouse:272" : "󰍽",
     "mouse:273" : "󰍽",
-    "UP" : "",
-    "DOWN" : "",
-    "LEFT" : "",
-    "RIGHT" : "",
+    "Up" : "",
+    "Down" : "",
+    "Left" : "",
+    "Right" : "",
     "XF86AudioLowerVolume" : "󰝞",
     "XF86AudioMicMute" : "󰍭",
     "XF86AudioMute" : "󰓄",
@@ -205,27 +205,27 @@ def keycode_mapping: { #? Fetches keycode from a file
     "XF86MonBrightnessDown" : "󰃜",
     "XF86MonBrightnessUp" : "󰃠",
     "switch:on:Lid Switch" : "󰛧",
-    "backspace" : "󰁮 ",
+    "Backspace" : "󰁮 ",
     $([ -f "${keyFile}" ] && cat "${keyFile}")
   };
   def category_mapping: { #? Define Category Names, derive from Dispatcher #? This will serve as the Group header
     "exec" : "Execute a Command:",
     "global": "Global:",
-    "exit" : "Exit Hyprland Session",
-    "fullscreen" : "Toggle Functions",
-    "fakefullscreen" : "Toggle Functions",
-    "mouse" : "Mouse functions",
-    "movefocus" : "Window functions",
-    "movewindow" : "Window functions",
-    "resizeactive" : "Window functions",
-    "togglefloating" : "Toggle Functions",
-    "togglegroup" : "Toggle Functions",
-    "togglespecialworkspace" : "Toggle Functions",
-    "togglesplit" : "Toggle Functions",
-    "workspace" : "Navigate Workspace",
-    "movetoworkspace" : "Navigate Workspace",
-    "movetoworkspacesilent" : "Navigate Workspace",
-    "changegroupactive" : "Change Active Group",
+    "exit" : "Exit Hyprland Session:",
+    "fullscreen" : "Toggle Functions:",
+    "fakefullscreen" : "Toggle Functions:",
+    "mouse" : "Mouse Functions:",
+    "movefocus" : "Window Functions:",
+    "movewindow" : "Window Functions:",
+    "resizeactive" : "Window Functions:",
+    "togglefloating" : "Toggle Functions:",
+    "togglegroup" : "Toggle Functions:",
+    "togglespecialworkspace" : "Toggle Functions:",
+    "togglesplit" : "Toggle Functions:",
+    "workspace" : "Navigate Workspace:",
+    "movetoworkspace" : "Navigate Workspace:",
+    "movetoworkspacesilent" : "Navigate Workspace:",
+    "changegroupactive" : "Change Active Group:",
     $([ -f "${categoryFile}" ] && cat "${categoryFile}")
   };
 def arg_mapping: { #! Do not Change this used for Demo only... As this will change .args! will be fatal
@@ -239,8 +239,8 @@ def arg_mapping: { #! Do not Change this used for Demo only... As this will chan
     "movetoworkspacesilent" : "Silently Move to Workspace",
     "movewindow" : "Move Window",
     "exec" : "" , #? Remove exec as executable will give the Description from separate function
-    "movetoworkspace" : "Move To Workspace:",
-    "workspace" : "Navigate to Workspace:",
+    "movetoworkspace" : "Move To Workspace",
+    "workspace" : "Navigate to Workspace",
     "togglefloating" : "Toggle Floating",
     "fullscreen" : "Toggle Fullscreen",
     "togglegroup" : "Toggle Group",
@@ -292,15 +292,15 @@ def get_keycode:
 .keycode |= (get_keycode // .) |  #? Apply the get_keycode transformation
 .key |= (key_mapping[.] // .) | #? Apply the get_key
 # .keybind = (.modmask | tostring // "") + (.key // "") | #! Same as below but without the keycode
-.keybind = (.modmask | tostring // "") + (.key // "") + ((.keycode // 0) | tostring) | #? Show the keybindings 
+.keybind = (.modmask | tostring // "") + (.key // "") + ((.keycode // 0) | tostring) | #? Show the keybindings
 .flags = " locked=" + (.locked | tostring) + " mouse=" + (.mouse | tostring) + " release=" + (.release | tostring) + " repeat=" + (.repeat | tostring) + " non_consuming=" + (.non_consuming | tostring) | #? This are the flags repeat,lock etc
 .category |= (category_mapping[.] // .) | #? Group by Categories will be use for headers
 #!if .modmask and .modmask != " " and .modmask != "" then .modmask |= (split(" ") | map(select(length > 0)) | if length > 1 then join("  + ") else .[0] end) else .modmask = "" end |
 if .keybind and .keybind != " " and .keybind != "" then .keybind |= (split(" ") | map(select(length > 0)) | if length > 1 then join("  + ") else .[0] end) else .keybind = "" end |  #? Clean up
   .arg |= (arg_mapping[.] // .) | #? See above for how arg is converted
- #!    .desc_executable |= gsub(".sh"; "") | #? Maybe Usefull soon removes ".sh" to file  
+ #!    .desc_executable |= gsub(".sh"; "") | #? Maybe Usefull soon removes ".sh" to file
   #? Creates a key desc... for fallback if  "has description" is false
-  .desc_executable |= (executables_mapping[.] // .) | #? exclusive for "exec" dispatchers 
+  .desc_executable |= (executables_mapping[.] // .) | #? exclusive for "exec" dispatchers
   .desc_dispatcher |= (description_mapping[.] // .)  |  #? for all other dispatchers
   .description = if .has_description == false then "\(.desc_dispatcher) \(.desc_executable)" else.description end
 ' #* <---- There is a '   do not delete this'
@@ -342,7 +342,7 @@ cols=$(tput cols)
 cols=${cols:-999}
 linebreak="$(printf '%.0s━' $(seq 1 "${cols}") "")"
 
-#! this Part Gives extra laoding time as I don't have efforts to make single space for each class
+#! this Part Gives extra loading time as I don't have efforts to make single space for each class
 metaData="$(jq -r '"\(.category) !=! \(.modmask) !=! \(.key) !=! \(.dispatcher) !=! \(.arg) !=! \(.keybind) !=! \(.description) !=! \(.flags)"' <<<"${jsonData}" | tr -s ' ' | sort -k 1)"
 
 #? This formats the pretty output
