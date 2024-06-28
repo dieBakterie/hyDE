@@ -70,7 +70,9 @@ while getopts iop: DeviceOpt; do
         ctrl="playerctl"
         srce="${nsink}"
         ;;
-    *) print_error ;;
+    *)
+        print_error
+        ;;
     esac
 done
 
@@ -83,10 +85,18 @@ step="${2:-5}"
 # execute action
 
 case "${1}" in
-i) action_${ctrl} i ;;
-d) action_${ctrl} d ;;
-m) "${ctrl}" "${srce}" -t && notify_mute && exit 0 ;;
-*) print_error ;;
+i)
+    action_"${ctrl}" i
+    ;;
+d)
+    action_"${ctrl}" d
+    ;;
+m)
+    "${ctrl}" "${srce}" -t && notify_mute && exit 0
+    ;;
+*)
+    print_error
+    ;;
 esac
 
 notify_vol

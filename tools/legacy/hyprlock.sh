@@ -1,13 +1,10 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2154
 # shellcheck disable=SC1091
+# shellcheck disable=SC2154
 
-#// set variables
-
+# source variables
 scrDir=$(dirname "$(realpath "$0")")
 source "$scrDir/globalcontrol.sh"
-
-#//functions
 
 fn_hyprlock() {
     if [[ $(playerctl status) == Playing ]]; then
@@ -15,41 +12,23 @@ fn_hyprlock() {
     elif [[ $(playerctl status) == Paused ]]; then
         hyprlock --config "${confDir}/hyprlock/presets/hyprlock_music_paused.conf"
     else
-        hyprlock --config "${confDir}/hyprlock/presets/hyprlock_no_music.conf"
+        hyprlock
     fi
 }
 
-replace_lockfile_in_background() {
-    local file=$1
-    local wallpaper_path=$2
-    local tmp_file
-
-    # Erstellen einer temporären Datei
-    tmp_file=$(mktemp)
-
-    # Verwenden von awk, um die Datei zu bearbeiten
-    awk -v wallpaper_path="$wallpaper_path" '
-    # Wenn die Zeile $lockFile = enthält, ersetze den Pfad
-    /\$lockFile =/ { sub(/=.*/, "= \"" wallpaper_path "\""); }
-    # Drucke jede Zeile (modifiziert oder unverändert)
-    { print }
-    ' "$file" >"$tmp_file" && mv "$tmp_file" "$file"
-}
-
 fn_background() {
-    local wallpaper_path
-    wallpaper_path=$(swww query | grep -oP '(?<=image: ).*' | head -n 1)
-
-    # Ersetze lockFile in den Konfigurationsdateien
-    replace_lockfile_in_background "${confDir}/hypr/hyprlock.conf" "$wallpaper_path"
-    for file in "${confDir}/hyprlock/presets"/*; do
-        replace_lockfile_in_background "$file" "$wallpaper_path"
-    done
+    local wallpaper="${cacheDir}/wall.blur"
+    local background="${confDir}/hyprlock/hyprlock.png"
+    local MIME
+    MIME=$(file --mime-type "${wallpaper}" | grep "image/png")
+    cp -f "${wallpaper}" "${background}"
+    if [[ -z "${MIME}" ]]; then
+        magick "${background}"[0] "${background}"
+    fi
 }
 
 fn_mpris() {
-    local thumb
-    thumb="${cacheDir}/mpris"
+    local thumb="${cacheDir}/mpris"
     { playerctl metadata --format '{{title}}   {{artist}}' && mpris_thumb; } || { rm -f "${thumb}*" && exit 1; }
 }
 
@@ -65,7 +44,6 @@ mpris_thumb() {
     pkill -USR2 hyprlock # updates the mpris thumbnail
 }
 
-# Funktion zum auswählen der hyprlock Konfiguration
 main() {
     while getopts ":hbm" opt; do
         case $opt in

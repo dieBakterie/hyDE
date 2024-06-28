@@ -2,12 +2,13 @@
         "format": "{player_icon} {dynamic}",
         "rotate": ${r_deg},
         "format-paused": "{status_icon} <i>{dynamic}</i>",
-        "player-icons": { 
+        "player-icons": {
             "default": "▶",
             "mpv": "🎵"
         },
         "status-icons": {
-            "paused": "⏸"
+            // "paused": "⏸"
+            "paused": "",
         },
         // "ignored-players": ["firefox"]
         "max-length": 1000,

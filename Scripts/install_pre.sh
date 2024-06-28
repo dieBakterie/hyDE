@@ -31,9 +31,15 @@ if pkg_installed grub && [ -f /boot/grub/grub.cfg ]; then
         echo -e "Select grub theme:\n[1] Retroboot (dark)\n[2] Pochita (light)"
         read -r -p " :: Press enter to skip grub theme <or> Enter option number : " grubopt
         case ${grubopt} in
-        1) grubtheme="Retroboot" ;;
-        2) grubtheme="Pochita" ;;
-        *) grubtheme="None" ;;
+        1)
+            grubtheme="Retroboot"
+            ;;
+        2)
+            grubtheme="Pochita"
+            ;;
+        *)
+            grubtheme="None"
+            ;;
         esac
 
         if [ "${grubtheme}" == "None" ]; then

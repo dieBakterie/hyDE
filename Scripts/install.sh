@@ -10,9 +10,9 @@ cat <<"EOF"
 
 -------------------------------------------------
         .
-       / \         _       _  _      ___  ___ 
+       / \         _       _  _      ___  ___
       /^  \      _| |_    | || |_  _|   \| __|
-     /  _  \    |_   _|   | __ | || | |) | _| 
+     /  _  \    |_   _|   | __ | || | |) | _|
     /  | | ~\     |_|     |_||_|\_, |___/|___|
    /.-'   '-.\                  |__/
 -------------------------------------------------
@@ -39,13 +39,19 @@ flg_Service=0
 
 while getopts idrs RunStep; do
     case $RunStep in
-    i) flg_Install=1 ;;
+    i)
+        flg_Install=1
+        ;;
     d)
         flg_Install=1
         export use_default="--noconfirm"
         ;;
-    r) flg_Restore=1 ;;
-    s) flg_Service=1 ;;
+    r)
+        flg_Restore=1
+        ;;
+    s)
+        flg_Service=1
+        ;;
     *)
         echo "...valid options are..."
         echo "i : [i]nstall hyprland without configs"
@@ -124,8 +130,12 @@ EOF
         prompt_timer 120 "Enter option number"
 
         case "${promptIn}" in
-        1) export getAur="yay" ;;
-        2) export getAur="paru" ;;
+        1)
+            export getAur="yay"
+            ;;
+        2)
+            export getAur="paru"
+            ;;
         *)
             echo -e "...Invalid option selected..."
             exit 1
@@ -138,8 +148,12 @@ EOF
         prompt_timer 120 "Enter option number"
 
         case "${promptIn}" in
-        1) export myShell="zsh" ;;
-        2) export myShell="fish" ;;
+        1)
+            export myShell="zsh"
+            ;;
+        2)
+            export myShell="fish"
+            ;;
         *)
             echo -e "...Invalid option selected..."
             exit 1
@@ -153,8 +167,12 @@ EOF
         prompt_timer 120 "Enter option number"
 
         case "${promptIn}" in
-        1) export myLock="swaylock" ;;
-        2) export myLock="hyprlock" ;;
+        1)
+            export myLock="swaylock"
+            ;;
+        2)
+            export myLock="hyprlock"
+            ;;
         *)
             echo -e "...Invalid option selected..."
             exit 1

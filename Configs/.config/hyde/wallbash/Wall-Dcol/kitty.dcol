@@ -3,7 +3,7 @@ foreground              #<wallbash_txt1>
 background              #<wallbash_pry1>
 selection_foreground    #<wallbash_pry1>
 selection_background    #<wallbash_txt1>
-cursor                  #<wallbash_pry4> 
+cursor                  #<wallbash_pry4>
 cursor_text_color       #<wallbash_txt4>
 
 active_tab_foreground     #<wallbash_pry1>

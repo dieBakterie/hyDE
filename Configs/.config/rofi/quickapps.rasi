@@ -43,7 +43,7 @@ listview {
     cycle:                       true;
     dynamic:                     true;
     scrollbar:                   false;
-    flow:                        horizontal; 
+    flow:                        horizontal;
     reverse:                     false;
     fixed-height:                false;
     fixed-columns:               false;

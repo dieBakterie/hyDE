@@ -35,14 +35,17 @@ while getopts "nps:" option ; do
 
     n ) # set next theme
         Theme_Change n
-        export xtrans="grow" ;;
+        export xtrans="grow"
+        ;;
 
     p ) # set previous theme
         Theme_Change p
-        export xtrans="outer" ;;
+        export xtrans="outer"
+        ;;
 
     s ) # set selected theme
-        themeSet="$OPTARG" ;;
+        themeSet="$OPTARG"
+        ;;
 
     * ) # invalid option
         echo "... invalid option ..."
@@ -50,7 +53,8 @@ while getopts "nps:" option ; do
         echo "n : set next theme"
         echo "p : set previous theme"
         echo "s : set input theme"
-        exit 1 ;;
+        exit 1
+        ;;
     esac
 done
 
@@ -112,4 +116,3 @@ fi
 #// wallpaper
 
 "${scrDir}/swwwallpaper.sh" -s "$(readlink "${hydeThemeDir}/wall.set")"
-

@@ -14,9 +14,15 @@ get_themes
 #// Evaluate options
 while getopts "t:w:" opt; do
     case $opt in
-    t) theme="$OPTARG" ;;
-    w) wallpaper="$OPTARG" ;;
-    *) unset theme unset wallpaper ;;
+    t)
+        theme="$OPTARG"
+        ;;
+    w)
+        wallpaper="$OPTARG"
+        ;;
+    *)
+        unset theme unset wallpaper
+        ;;
     esac
 done
 

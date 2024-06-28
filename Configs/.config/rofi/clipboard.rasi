@@ -75,7 +75,7 @@ listview {
     enabled:                     true;
     padding:                     0.5em;
     columns:                     1;
-    lines:                       11; 
+    lines:                       11;
     cycle:                       true;
     fixed-height:                true;
     fixed-columns:               false;

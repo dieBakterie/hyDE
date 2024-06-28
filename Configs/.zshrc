@@ -43,7 +43,7 @@ function in {
     for pkg in "${inPkg[@]}"; do
         if pacman -Si "${pkg}" &>/dev/null ; then
             arch+=("${pkg}")
-        else 
+        else
             aur+=("${pkg}")
         fi
     done
