@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2154
-# shellcheck disable=SC1091
 #|---/ /+----------------------------------------+---/ /|#
 #|--/ /-| Script to install pkgs from input list |--/ /-|#
 #|-/ /--| Prasanth Rangan                        |-/ /--|#
@@ -8,7 +6,6 @@
 
 scrDir=$(dirname "$(realpath "$0")")
 source "${scrDir}/global_fn.sh"
-# shellcheck disable=SC2181
 if [ $? -ne 0 ]; then
     echo "Error: unable to source global_fn.sh..."
     exit 1
@@ -28,7 +25,7 @@ while read -r pkg deps; do
         continue
     fi
 
-    if [ -n "${deps}" ]; then
+    if [ ! -z "${deps}" ]; then
         deps="${deps%"${deps##*[![:space:]]}"}"
         while read -r cdep; do
             pass=$(cut -d '#' -f 1 "${listPkg}" | awk -F '|' -v chk="${cdep}" '{if($1 == chk) {print 1;exit}}')
@@ -64,9 +61,9 @@ done < <(cut -d '#' -f 1 "${listPkg}")
 IFS=${ofs}
 
 if [[ ${#archPkg[@]} -gt 0 ]]; then
-    sudo pacman "${use_default}" -S "${archPkg[@]}"
+    sudo pacman ${use_default} -S "${archPkg[@]}"
 fi
 
 if [[ ${#aurhPkg[@]} -gt 0 ]]; then
-    "${aurhlpr}" "${use_default}" -S "${aurhPkg[@]}"
+    "${aurhlpr}" ${use_default} -S "${aurhPkg[@]}"
 fi

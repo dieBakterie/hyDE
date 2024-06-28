@@ -6,44 +6,17 @@
 
 print_prompt() {
     [[ "${verbose}" == "false" ]] && return 0
-    while (("$#")); do
+    while (( "$#" )); do
         case "$1" in
-        -r)
-            echo -ne "\e[31m$2\e[0m"
-            shift 2
-            ;; # Red
-        -g)
-            echo -ne "\e[32m$2\e[0m"
-            shift 2
-            ;; # Green
-        -y)
-            echo -ne "\e[33m$2\e[0m"
-            shift 2
-            ;; # Yellow
-        -b)
-            echo -ne "\e[34m$2\e[0m"
-            shift 2
-            ;; # Blue
-        -m)
-            echo -ne "\e[35m$2\e[0m"
-            shift 2
-            ;; # Magenta
-        -c)
-            echo -ne "\e[36m$2\e[0m"
-            shift 2
-            ;; # Cyan
-        -w)
-            echo -ne "\e[37m$2\e[0m"
-            shift 2
-            ;; # White
-        -n)
-            echo -ne "\e[96m$2\e[0m"
-            shift 2
-            ;; # Neon
-        *)
-            echo -ne "$1"
-            shift
-            ;;
+            -r) echo -ne "\e[31m$2\e[0m"; shift 2 ;; # Red
+            -g) echo -ne "\e[32m$2\e[0m"; shift 2 ;; # Green
+            -y) echo -ne "\e[33m$2\e[0m"; shift 2 ;; # Yellow
+            -b) echo -ne "\e[34m$2\e[0m"; shift 2 ;; # Blue
+            -m) echo -ne "\e[35m$2\e[0m"; shift 2 ;; # Magenta
+            -c) echo -ne "\e[36m$2\e[0m"; shift 2 ;; # Cyan
+            -w) echo -ne "\e[37m$2\e[0m"; shift 2 ;; # White
+            -n) echo -ne "\e[96m$2\e[0m"; shift 2 ;; # Neon
+            *) echo -ne "$1"; shift ;;
         esac
     done
     echo ""
@@ -61,7 +34,7 @@ set +e
 
 # error function
 ask_help() {
-    cat <<HELP
+cat << HELP
 ...Usage...
 $(print_prompt "$0 " -y "Theme-Name " -c "/Path/to/Configs")
 $(print_prompt "$0 " -y "Theme-Name " -c "https://github.com/User/Repository")
@@ -89,7 +62,7 @@ else
         Git_Repo=${Git_Repo%/tree/*}
     else
         branches=$(curl -s "https://api.github.com/repos/${Git_Repo#*://*/}/branches" | jq -r '.[].name')
-        branches=("$branches")
+        branches=($branches)
         if [[ ${#branches[@]} -le 1 ]]; then
             branch=${branches[0]}
         else
@@ -108,15 +81,15 @@ else
     if [ -d "$Theme_Dir" ]; then
         print_prompt "Directory $Theme_Dir already exists. Using existing directory."
         if cd "$Theme_Dir"; then
-            git fetch --all &>/dev/null
-            git reset --hard "@{upstream}" &>/dev/null
-            cd - &>/dev/null
+            git fetch --all &> /dev/null
+            git reset --hard @{upstream} &> /dev/null
+            cd - &> /dev/null
         else
             print_prompt -y "Could not navigate to $Theme_Dir. Skipping git pull."
         fi
     else
         print_prompt "Directory $Theme_Dir does not exist. Cloning repository into new directory."
-        git clone -b "$branch" --depth 1 "$Git_Repo" "$Theme_Dir" &>/dev/null
+        git clone -b "$branch" --depth 1 "$Git_Repo" "$Theme_Dir" &> /dev/null
         if [ $? -ne 0 ]; then
             print_prompt "Git clone failed"
             exit 1
@@ -124,7 +97,7 @@ else
     fi
 fi
 
-print_prompt "Patching" -g " --// ${Fav_Theme} //-- " "from " -b "${Theme_Dir}\n"
+print_prompt "Patching" -g " --// ${Fav_Theme} //-- "  "from " -b "${Theme_Dir}\n"
 
 Fav_Theme_Dir="${Theme_Dir}/Configs/.config/hyde/themes/${Fav_Theme}"
 [ ! -d "${Fav_Theme_Dir}" ] && print_prompt -r "[ERROR] " "'${Fav_Theme_Dir}'" -y " Do not Exist" && exit 1
@@ -134,32 +107,32 @@ restore_list=""
 
 while IFS= read -r fchk; do
     if [[ -e "${Theme_Dir}/Configs/${fchk}" ]]; then
-        print_prompt -g "[OK] " "${fchk}"
+        print_prompt -g "[OK] "  "${fchk}"
         fbase=$(basename "${fchk}")
         fdir=$(dirname "${fchk}")
         restore_list+="Y|Y|\${HOME}/${fdir}|${fbase}|hyprland\n"
     else
         print_prompt -y "[!!] " "${fchk} --> do not exist in ${Theme_Dir}/Configs/"
     fi
-done <<<"$config"
+done <<< "$config"
 readonly restore_list
 
 # Get Wallpapers
 wallpapers=$(find "${Fav_Theme_Dir}" -type f \( -iname "*.gif" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \))
 wallcount="$(echo "${wallpapers}" | wc -l)"
-{ [ -z "${wallpapers}" ] && print_prompt -r "[ERROR] " "No wallpapers found" && exit_flag=true; } || { readonly wallpapers && print_prompt -g "\n[OK] " "wallpapers :: [count] ${wallcount} (.gif+.jpg+.jpeg+.png)"; }
+{ [ -z "${wallpapers}" ] && print_prompt -r "[ERROR] " "No wallpapers found" && exit_flag=true ;} || { readonly wallpapers && print_prompt -g "\n[OK] " "wallpapers :: [count] ${wallcount} (.gif+.jpg+.jpeg+.png)" ;}
 
 # overparsing 😁
 check_tars() {
     local inVal="${1}"
     local gsLow=$(echo "${inVal}" | tr '[:upper:]' '[:lower:]')
-    local gsVal="$(awk -F"[\"']" '/^[[:space:]]*exec[[:space:]]*=[[:space:]]*gsettings[[:space:]]*set[[:space:]]*org.gnome.desktop.interface[[:space:]]*'${gsLow}'-theme[[:space:]]*/ {last=$2} END {print last}' "${Fav_Theme_Dir}/hypr.theme")"
+    local gsVal="$(awk -F"[\"']" '/^[[:space:]]*exec[[:space:]]*=[[:space:]]*gsettings[[:space:]]*set[[:space:]]*org.gnome.desktop.interface[[:space:]]*'${gsLow}'-theme[[:space:]]*/ {last=$2} END {print last}' "${Fav_Theme_Dir}/hypr.theme" )"
     local trVal
 
-    if [ -n "${gsVal}" ]; then
+    if [ ! -z "${gsVal}" ]; then
         print_prompt -g "[OK] " "hypr.theme :: [${gsLow}]" -b " ${gsVal}"
         trArc="$(find "${Theme_Dir}" -type f -name "${inVal}_*.tar.*")"
-        [ -f "${trArc}" ] && [ "$(echo "${trArc}" | wc -l)" -eq 1 ] && trVal="$(basename "$(tar -tf "${trArc}" | cut -d '/' -f1 | sort -u)")" && trVal="$(echo "${trVal}" | grep -w "${gsVal}")"
+        [ -f "${trArc}" ] && [ $(echo "${trArc}" | wc -l) -eq 1 ] && trVal="$(basename "$(tar -tf "${trArc}" | cut -d '/' -f1 | sort -u)")" && trVal="$(echo "${trVal}" | grep -w "${gsVal}")"
         print_prompt -g "[OK] " "../*.tar.* :: [${gsLow}]" -b " ${trVal}"
         [ "${trVal}" != "${gsVal}" ] && print_prompt -r "[ERROR] " "${gsLow}-theme set in hypr.theme does not exist in ${inVal}_*.tar.*" && exit_flag=true
     else
@@ -177,7 +150,7 @@ print_prompt "" && [[ "${exit_flag}" = true ]] && exit 1
 prefix=("Gtk" "Icon" "Cursor")
 tgtDir=("$HOME/.themes" "$HOME/.icons" "$HOME/.icons")
 
-for indx in "${!prefix[@]}"; do
+for indx in ${!prefix[@]}; do
     tarFile="$(find "${Theme_Dir}" -type f -name "${prefix[indx]}_*.tar.*")"
     [ -f "${tarFile}" ] || continue
     [ -d "${tgtDir[indx]}" ] || mkdir -p "${tgtDir[indx]}"
@@ -192,12 +165,12 @@ Fav_Theme_Walls="${confDir}/hyde/themes/${Fav_Theme}/wallpapers"
 [ ! -d "${Fav_Theme_Walls}" ] && mkdir -p "${Fav_Theme_Walls}"
 while IFS= read -r walls; do
     cp -f "${walls}" "${Fav_Theme_Walls}"
-done <<<"${wallpapers}"
+done <<< "${wallpapers}"
 
 # restore configs with theme override
-echo -en "${restore_list}" >"${Theme_Dir}/restore_cfg.lst"
+echo -en "${restore_list}" > "${Theme_Dir}/restore_cfg.lst"
 print_prompt -g "\n[exec] " "restore_cfg.sh \"${Theme_Dir}/restore_cfg.lst\" \"${Theme_Dir}/Configs\" \"${Fav_Theme}\"\n"
-"${scrDir}/restore_cfg.sh" "${Theme_Dir}/restore_cfg.lst" "${Theme_Dir}/Configs" "${Fav_Theme}" &>/dev/null
+"${scrDir}/restore_cfg.sh" "${Theme_Dir}/restore_cfg.lst" "${Theme_Dir}/Configs" "${Fav_Theme}" &> /dev/null
 [ "${3}" == "--skipcaching" ] || "$HOME/.local/share/bin/swwwallcache.sh" -t "${Fav_Theme}"
 
 exit 0

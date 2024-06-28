@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2154
-# shellcheck disable=SC1091
 #|---/ /+-------------------------------------+---/ /|#
 #|--/ /-| Script to apply pre install configs |--/ /-|#
 #|-/ /--| Prasanth Rangan                     |-/ /--|#
@@ -29,17 +27,11 @@ if pkg_installed grub && [ -f /boot/grub/grub.cfg ]; then
         fi
 
         echo -e "Select grub theme:\n[1] Retroboot (dark)\n[2] Pochita (light)"
-        read -r -p " :: Press enter to skip grub theme <or> Enter option number : " grubopt
+        read -p " :: Press enter to skip grub theme <or> Enter option number : " grubopt
         case ${grubopt} in
-        1)
-            grubtheme="Retroboot"
-            ;;
-        2)
-            grubtheme="Pochita"
-            ;;
-        *)
-            grubtheme="None"
-            ;;
+            1) grubtheme="Retroboot" ;;
+            2) grubtheme="Pochita" ;;
+            *) grubtheme="None" ;;
         esac
 
         if [ "${grubtheme}" == "None" ]; then
@@ -47,7 +39,7 @@ if pkg_installed grub && [ -f /boot/grub/grub.cfg ]; then
             sudo sed -i "s/^GRUB_THEME=/#GRUB_THEME=/g" /etc/default/grub
         else
             echo -e "\033[0;32m[BOOTLOADER]\033[0m Setting grub theme // ${grubtheme}"
-            sudo tar -xzf "${cloneDir}/Source/arcs/Grub_${grubtheme}.tar.gz" -C /usr/share/grub/themes/
+            sudo tar -xzf ${cloneDir}/Source/arcs/Grub_${grubtheme}.tar.gz -C /usr/share/grub/themes/
             sudo sed -i "/^GRUB_DEFAULT=/c\GRUB_DEFAULT=saved
             /^GRUB_GFXMODE=/c\GRUB_GFXMODE=1280x1024x32,auto
             /^GRUB_THEME=/c\GRUB_THEME=\"/usr/share/grub/themes/${grubtheme}/theme.txt\"
@@ -62,16 +54,15 @@ if pkg_installed grub && [ -f /boot/grub/grub.cfg ]; then
 fi
 
 # systemd-boot
-if pkg_installed systemd && nvidia_detect && [ "$(bootctl status 2>/dev/null | awk '{if ($1 == "Product:") print $2}')" == "systemd-boot" ]; then
+if pkg_installed systemd && nvidia_detect && [ $(bootctl status 2> /dev/null | awk '{if ($1 == "Product:") print $2}') == "systemd-boot" ]; then
     echo -e "\033[0;32m[BOOTLOADER]\033[0m detected // systemd-boot"
 
-    # shellcheck disable=SC2012
-    if [ "$(ls -l /boot/loader/entries/*.conf.t2.bkp 2>/dev/null | wc -l)" -ne "$(ls -l /boot/loader/entries/*.conf 2>/dev/null | wc -l)" ]; then
+    if [ $(ls -l /boot/loader/entries/*.conf.t2.bkp 2> /dev/null | wc -l) -ne $(ls -l /boot/loader/entries/*.conf 2> /dev/null | wc -l) ]; then
         echo "nvidia detected, adding nvidia_drm.modeset=1 to boot option..."
-        find /boot/loader/entries/ -type f -name "*.conf" | while read -r imgconf; do
-            sudo cp "${imgconf}" "${imgconf}".t2.bkp
-            sdopt=$(grep -w "^options" "${imgconf}" | sed 's/\b quiet\b//g' | sed 's/\b splash\b//g' | sed 's/\b nvidia_drm.modeset=.\b//g')
-            sudo sed -i "/^options/c${sdopt} quiet splash nvidia_drm.modeset=1" "${imgconf}"
+        find /boot/loader/entries/ -type f -name "*.conf" | while read imgconf; do
+            sudo cp ${imgconf} ${imgconf}.t2.bkp
+            sdopt=$(grep -w "^options" ${imgconf} | sed 's/\b quiet\b//g' | sed 's/\b splash\b//g' | sed 's/\b nvidia_drm.modeset=.\b//g')
+            sudo sed -i "/^options/c${sdopt} quiet splash nvidia_drm.modeset=1" ${imgconf}
         done
     else
         echo -e "\033[0;33m[SKIP]\033[0m systemd-boot is already configured..."

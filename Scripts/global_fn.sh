@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2034
 #|---/ /+------------------+---/ /|#
 #|--/ /-| Global functions |--/ /-|#
 #|-/ /--| Prasanth Rangan  |-/ /--|#
@@ -13,12 +12,12 @@ confDir="${XDG_CONFIG_HOME:-$HOME/.config}"
 cacheDir="$HOME/.cache/hyde"
 aurList=(yay paru)
 shlList=(zsh fish)
-lckList=(swaylock-effects hyprlock)
+lckList=(swaylock-effects-git hyprlock)
 
 pkg_installed() {
     local PkgIn=$1
 
-    if pacman -Qi "${PkgIn}" &>/dev/null; then
+    if pacman -Qi "${PkgIn}" &> /dev/null; then
         return 0
     else
         return 1
@@ -31,7 +30,7 @@ chk_list() {
     for pkg in "${inList[@]}"; do
         if pkg_installed "${pkg}"; then
             printf -v "${vrType}" "%s" "${pkg}"
-            export "vrType"
+            export "${vrType}"
             return 0
         fi
     done
@@ -41,7 +40,7 @@ chk_list() {
 pkg_available() {
     local PkgIn=$1
 
-    if pacman -Si "${PkgIn}" &>/dev/null; then
+    if pacman -Si "${PkgIn}" &> /dev/null; then
         return 0
     else
         return 1
@@ -51,8 +50,7 @@ pkg_available() {
 aur_available() {
     local PkgIn=$1
 
-    # shellcheck disable=SC2154
-    if ${aurhlpr} -Si "${PkgIn}" &>/dev/null; then
+    if ${aurhlpr} -Si "${PkgIn}" &> /dev/null; then
         return 0
     else
         return 1
@@ -68,12 +66,12 @@ nvidia_detect() {
         return 0
     fi
     if [ "${1}" == "--drivers" ]; then
-        while read -r -d ' ' nvcode; do
+        while read -r -d ' ' nvcode ; do
             awk -F '|' -v nvc="${nvcode}" 'substr(nvc,1,length($3)) == $3 {split(FILENAME,driver,"/"); print driver[length(driver)],"\nnvidia-utils"}' "${scrDir}"/.nvidia/nvidia*dkms
-        done <<<"${dGPU[@]}"
+        done <<< "${dGPU[@]}"
         return 0
     fi
-    if grep -iq nvidia <<<"${dGPU[@]}"; then
+    if grep -iq nvidia <<< "${dGPU[@]}"; then
         return 0
     else
         return 1
@@ -87,8 +85,7 @@ prompt_timer() {
     local msg=$2
     while [[ ${timsec} -ge 0 ]]; do
         echo -ne "\r :: ${msg} (${timsec}s) : "
-        read -r -t 1 -n 1 promptIn
-        # shellcheck disable=SC2181
+        read -t 1 -n 1 promptIn
         [ $? -eq 0 ] && break
         ((timsec--))
     done

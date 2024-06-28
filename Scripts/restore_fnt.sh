@@ -5,14 +5,13 @@
 #|/ /---+------------------------------------+/ /---|#
 
 scrDir=$(dirname "$(realpath "$0")")
-# shellcheck disable=SC1091
 source "${scrDir}/global_fn.sh"
 if [ $? -ne 0 ]; then
     echo "Error: unable to source global_fn.sh..."
     exit 1
 fi
 
-cat <"${scrDir}/restore_fnt.lst" | while read -r lst; do
+cat "${scrDir}/restore_fnt.lst" | while read lst; do
 
     fnt=$(echo "$lst" | awk -F '|' '{print $1}')
     tgt=$(echo "$lst" | awk -F '|' '{print $2}')
@@ -28,7 +27,6 @@ cat <"${scrDir}/restore_fnt.lst" | while read -r lst; do
         echo -e "\033[0;32m[extract]\033[0m ${tgt} directory created..."
     fi
 
-    # shellcheck disable=SC2154
     sudo tar -xzf "${cloneDir}/Source/arcs/${fnt}.tar.gz" -C "${tgt}/"
     echo -e "\033[0;32m[extract]\033[0m ${fnt}.tar.gz --> ${tgt}..."
 
