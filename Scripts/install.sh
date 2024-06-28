@@ -162,8 +162,8 @@ EOF
         echo "${myShell}" >>"${scrDir}/install_pkg.lst"
     fi
 
-    if ! chk_list "mylock" "${lckList[@]}"; then
-        echo -e "Select lock screen:\n[1] swaylock-effects\n[2] hyprlock"
+    if ! chk_list "myLock" "${lckList[@]}"; then
+        echo -e "Select lock screen:\n[1] swaylock\n[2] hyprlock"
         prompt_timer 120 "Enter option number"
 
         case "${promptIn}" in
