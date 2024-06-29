@@ -2,13 +2,11 @@
 # shellcheck disable=SC2154
 # shellcheck disable=SC1091
 
-#// set variables
-
+# Set variables
 scrDir=$(dirname "$(realpath "$0")")
 source "$scrDir/globalcontrol.sh"
 
-
-#//functions
+# Functions
 
 # Locks the screen depending on player status
 fn_hyprlock() {
@@ -43,7 +41,7 @@ background() {
     echo -e "\033[0;32m[BACKGROUND]\033[0m ${wallpaper_path} -> ${file}"
 }
 
-# Function for mpris
+# Function for MPRIS
 fn_mpris() {
     local thumb
     thumb="${cacheDir}/thumb"
@@ -59,12 +57,12 @@ mpris_thumb() {
     printf "%s\n" "$artUrl" >"${thumb}.inf"
 
     curl -so "${thumb}.png" "$artUrl"
-    pkill -USR2 hyprlock # updates the mpris thumbnail
+    pkill -USR2 hyprlock # updates the MPRIS thumbnail
 }
 
 # Show help message
 ask_help() {
-    cat << HELP
+    cat <<HELP
 Usage: $(basename "$0") [options]
 Options:
   -h, --help        Show this help message
@@ -76,15 +74,50 @@ HELP
 
 # Main function
 main() {
-    while getopts ":hlbt" opt; do
-        case $opt in
-        h) ask_help; exit 0 ;;
-        l) fn_hyprlock ;;
-        b) fn_background ;;
-        t) fn_mpris ;;
-        *) echo "Invalid option: -$OPTARG" ; ask_help ; exit 1 ;;
+    local lock=false
+    local background=false
+    local thumbnail=false
+
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+        -h | --help)
+            ask_help
+            exit 0
+            ;;
+        -l | --lock) lock=true ;;
+        -b | --background) background=true ;;
+        -t | --thumbnail) thumbnail=true ;;
+        -*)
+            # Iterate over combined short options
+            for ((i = 1; i < ${#1}; i++)); do
+                case ${1:i:1} in
+                l) lock=true ;;
+                b) background=true ;;
+                t) thumbnail=true ;;
+                h)
+                    ask_help
+                    exit 0
+                    ;;
+                *)
+                    echo "Invalid option: -${1:i:1}"
+                    ask_help
+                    exit 1
+                    ;;
+                esac
+            done
+            ;;
+        *)
+            echo "Invalid option: $1"
+            ask_help
+            exit 1
+            ;;
         esac
+        shift
     done
+
+    $lock && fn_hyprlock
+    $background && fn_background
+    $thumbnail && fn_mpris
 }
 
 main "$@"
