@@ -1,5 +1,4 @@
 #!/usr/bin/env sh
-# shellcheck disable=SC2002
 
 # CPU model
 model=$(cat /proc/cpuinfo | grep 'model name' | head -n 1 | awk -F ': ' '{print $2}')
@@ -10,7 +9,7 @@ utilization=$(top -bn1 | awk '/^%Cpu/ {print 100 - $8}')
 # Clock speed
 freqlist=$(cat /proc/cpuinfo | grep "cpu MHz" | awk '{ print $4 }')
 maxfreq=$(cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq | sed 's/...$//')
-frequency=$(echo "$freqlist" | tr ' ' '\n' | awk "{ sum+=\$1 } END {printf \"%.0f/$maxfreq MHz\", sum/NR}")
+frequency=$(echo $freqlist | tr ' ' '\n' | awk "{ sum+=\$1 } END {printf \"%.0f/$maxfreq MHz\", sum/NR}")
 
 # CPU temp
 temp=$(sensors | awk '/Package id 0/ {print $4}' | awk -F '[+.]' '{print $2}')
@@ -28,10 +27,9 @@ eval_ico() {
     echo "${set_ico}" | jq -r --arg aky "$1" --arg avl "$map_ico" '.[$aky] | .[$avl]'
 }
 
-thermo=$(eval_ico thermo "$temp")
-emoji=$(eval_ico emoji "$temp")
-speedo=$(eval_ico util "$utilization")
+thermo=$(eval_ico thermo $temp)
+emoji=$(eval_ico emoji $temp)
+speedo=$(eval_ico util $utilization)
 
 # Print cpu info (json)
-# shellcheck disable=SC2028
 echo "{\"text\":\"${thermo} ${temp}°C\", \"tooltip\":\"${model}\n${thermo} Temperature: ${temp}°C ${emoji}\n${speedo} Utilization: ${utilization}%\n Clock Speed: ${frequency}\"}"

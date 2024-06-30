@@ -20,9 +20,10 @@ client_list+=("$HOME/.var/app/xyz.armcord.ArmCord/config/ArmCord/themes/theme.cs
 
 #// main loop
 
-for client_css in "${client_list[@]}"; do
+for client_css in "${client_list[@]}" ; do
     eval client_css="${client_css}"
-    if [[ -d $(dirname "${client_css}") ]]; then
+    if [[  -d $(dirname "${client_css}") ]] ; then
         cp "${discord_col}" "${client_css}"
     fi
 done
+

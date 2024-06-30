@@ -1,6 +1,5 @@
-#!/usr/bin/env bash
-# shellcheck disable=SC1091
-# shellcheck disable=SC2154
+#!/usr/bin/env sh
+
 
 #// set variables
 
@@ -12,14 +11,15 @@ get_themes
 
 #// define functions
 
-Theme_Change() {
+Theme_Change()
+{
     local x_switch=$1
-    for i in "${!thmList[@]}"; do
-        if [ "${thmList[i]}" == "${hydeTheme}" ]; then
-            if [ "${x_switch}" == 'n' ]; then
-                setIndex=$(((i + 1) % ${#thmList[@]}))
-            elif [ "${x_switch}" == 'p' ]; then
-                setIndex=$((i - 1))
+    for i in ${!thmList[@]} ; do
+        if [ "${thmList[i]}" == "${hydeTheme}" ] ; then
+            if [ "${x_switch}" == 'n' ] ; then
+                setIndex=$(( (i + 1) % ${#thmList[@]} ))
+            elif [ "${x_switch}" == 'p' ] ; then
+                setIndex=$(( i - 1 ))
             fi
             themeSet="${thmList[setIndex]}"
             break
@@ -30,38 +30,34 @@ Theme_Change() {
 
 #// evaluate options
 
-while getopts "nps:" option; do
+while getopts "nps:" option ; do
     case $option in
 
-    n) # set next theme
+    n ) # set next theme
         Theme_Change n
-        export xtrans="grow"
-        ;;
+        export xtrans="grow" ;;
 
-    p) # set previous theme
+    p ) # set previous theme
         Theme_Change p
-        export xtrans="outer"
-        ;;
+        export xtrans="outer" ;;
 
-    s) # set selected theme
-        themeSet="$OPTARG"
-        ;;
+    s ) # set selected theme
+        themeSet="$OPTARG" ;;
 
-    *) # invalid option
+    * ) # invalid option
         echo "... invalid option ..."
         echo "$(basename "${0}") -[option]"
         echo "n : set next theme"
         echo "p : set previous theme"
         echo "s : set input theme"
-        exit 1
-        ;;
+        exit 1 ;;
     esac
 done
 
 
 #// update control file
 
-if ! $(echo "${thmList[@]}" | grep -wq "${themeSet}"); then
+if ! $(echo "${thmList[@]}" | grep -wq "${themeSet}") ; then
     themeSet="${hydeTheme}"
 fi
 
@@ -73,7 +69,7 @@ source "${scrDir}/globalcontrol.sh"
 
 #// hypr
 
-sed '1d' "${hydeThemeDir}/hypr.theme" >"${confDir}/hypr/themes/theme.conf"
+sed '1d' "${hydeThemeDir}/hypr.theme" > "${confDir}/hypr/themes/theme.conf"
 gtkTheme="$(grep 'gsettings set org.gnome.desktop.interface gtk-theme' "${hydeThemeDir}/hypr.theme" | awk -F "'" '{print $((NF - 1))}')"
 gtkIcon="$(grep 'gsettings set org.gnome.desktop.interface icon-theme' "${hydeThemeDir}/hypr.theme" | awk -F "'" '{print $((NF - 1))}')"
 
@@ -86,13 +82,13 @@ sed -i "/^icon_theme=/c\icon_theme=${gtkIcon}" "${confDir}/qt6ct/qt6ct.conf"
 
 #// gtk3
 
-sed -i "/^gtk-theme-name=/c\gtk-theme-name=${gtkTheme}" "${confDir}/gtk-3.0/settings.ini"
-sed -i "/^gtk-icon-theme-name=/c\gtk-icon-theme-name=${gtkIcon}" "${confDir}/gtk-3.0/settings.ini"
+sed -i "/^gtk-theme-name=/c\gtk-theme-name=${gtkTheme}" $confDir/gtk-3.0/settings.ini
+sed -i "/^gtk-icon-theme-name=/c\gtk-icon-theme-name=${gtkIcon}" $confDir/gtk-3.0/settings.ini
 
 
 #// gtk4
 
-if [ -d /run/current-system/sw/share/themes ]; then
+if [ -d /run/current-system/sw/share/themes ] ; then
     themeDir=/run/current-system/sw/share/themes
 else
     themeDir=~/.themes
@@ -103,8 +99,8 @@ ln -s "${themeDir}/${gtkTheme}/gtk-4.0" "${confDir}/gtk-4.0"
 
 #// flatpak GTK
 
-if pkg_installed flatpak; then
-    if [ "${enableWallDcol}" -eq 0 ]; then
+if pkg_installed flatpak ; then
+    if [ "${enableWallDcol}" -eq 0 ] ; then
         flatpak --user override --env=GTK_THEME="${gtkTheme}"
         flatpak --user override --env=ICON_THEME="${gtkIcon}"
     else
@@ -113,7 +109,7 @@ if pkg_installed flatpak; then
     fi
 fi
 
-
 #// wallpaper
 
 "${scrDir}/swwwallpaper.sh" -s "$(readlink "${hydeThemeDir}/wall.set")"
+
