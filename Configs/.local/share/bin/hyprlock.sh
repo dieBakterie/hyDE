@@ -5,6 +5,7 @@
 # Set variables
 scrDir=$(dirname "$(realpath "$0")")
 source "$scrDir/globalcontrol.sh"
+export scrDir
 
 # Functions
 
@@ -15,7 +16,7 @@ fn_hyprlock() {
     elif [[ $(playerctl status) == Paused ]]; then
         hyprlock --config "${confDir}/hyprlock/presets/hyprlock_music_paused.conf"
     else
-        hyprlock --config "${confDir}/hyprlock/presets/hyprlock_no_music.conf"
+        hyprlock
     fi
 }
 
@@ -45,7 +46,7 @@ background() {
 fn_mpris() {
     local thumb
     thumb="${cacheDir}/thumb"
-    { playerctl metadata --format '{{title}}   {{artist}}' && mpris_thumb; } || { rm -f "${thumb}.*" && exit 1; }
+    { playerctl metadata --format '{{title}}  {{artist}}' && mpris_thumb; } || { rm -f "${thumb}.*" && exit 1; }
 }
 
 # Generate thumbnail

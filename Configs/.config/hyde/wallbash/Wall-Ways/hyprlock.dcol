@@ -1,4 +1,4 @@
-~/.config/hyprlock/colors.conf|$scrPath/hyprlock.sh -b
+~/.config/hyprlock/colors.conf
 # Color group 1
 
 $primary_1   = <wallbash_pry1>    # primary color 1

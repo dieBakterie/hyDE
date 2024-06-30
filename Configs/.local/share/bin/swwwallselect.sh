@@ -37,6 +37,6 @@ if [ -n "${rofiSel}" ]; then
         setWall="$(find "${wallPathArray[i]}" -type f -name "${rofiSel}")"
         [ -z "${setWall}" ] || break
     done
-    "${scrDir}/swwwallpaper.sh" -s "${setWall}"
+    "${scrDir}/swwwallpaper.sh" -s "${setWall}" && sleep 0.1 && "${scrDir}/hyprlock.sh" --background
     notify-send -a "t1" -i "${thmbDir}/$(set_hash "${setWall}").sqre" " ${rofiSel}"
 fi
